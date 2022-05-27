@@ -14,9 +14,7 @@ const unsigned int ECHO_PIN_LEFT=8;
 const unsigned int TRIG_PIN_RIGHT=3;
 const unsigned int ECHO_PIN_RIGHT=2;
 
-
-
-
+const unsigned int BUZZ_PIN=4;
 
 const unsigned int BAUD_RATE=9600;
 float distance_forward = 0;
@@ -52,11 +50,12 @@ void setup() {
   pinMode(TRIG_PIN_LEFT, OUTPUT);
   pinMode(ECHO_PIN_LEFT, INPUT);
 
-  
+  pinMode(BUZZ_PIN, OUTPUT);
+
   Serial.begin(BAUD_RATE);
 
   
-  Serial.setTimeout(100); //default = 1000ms
+  Serial.setTimeout(200); //default = 1000ms
   Car.SetSpeed(car_speed);  //Speed: 0-255 ?
   
 }
@@ -77,7 +76,11 @@ void setup() {
  */
 void loop() {
 
-  unsigned long duration= 0;
+
+
+//Serial.println(c);
+unsigned char i, j ;
+unsigned long duration= 0;
 /**-------------------**/
   digitalWrite(TRIG_PIN_REAR, LOW);
   delayMicroseconds(2);
@@ -163,6 +166,43 @@ void loop() {
 
 
 /**-------------------**/
+int amount = 0;
+
+ if(left_distance < 20 || right_distance<20 || front_distance<20 || rear_distance<20 ){
+     Car.Brake(); 
+     car_speed=50;
+     amount=50;
+        for (i = 0; i <80; i++) // When a frequency sound
+      {
+        digitalWrite (BUZZ_PIN, HIGH) ; //send tone
+        delay (1) ;
+        digitalWrite (BUZZ_PIN, LOW) ; //no tone
+        delay (1) ;
+      }
+   }else if(left_distance < 30 || right_distance<30 || front_distance<30 || rear_distance<30 ){
+     car_speed=100;
+     amount = 100;
+     for (i = 0; i <80; i++) // When a frequency sound
+      {
+        digitalWrite (BUZZ_PIN, HIGH) ; //send tone
+        delay (2) ;
+        digitalWrite (BUZZ_PIN, LOW) ; //no tone
+        delay (2) ;
+      }
+    
+   }else if(left_distance < 50 || right_distance<50 || front_distance<50 || rear_distance<50 ){
+    car_speed=250;
+     amount = 200;
+     for (i = 0; i <80; i++) // When a frequency sound
+      {
+        digitalWrite (BUZZ_PIN, HIGH) ; //send tone
+        delay (3) ;
+        digitalWrite (BUZZ_PIN, LOW) ; //no tone
+        delay (3) ;
+      }
+    
+   }
+
 
 
 
@@ -171,7 +211,7 @@ void loop() {
 
 
 
-
+   Serial.println(direction);
 
   if (Serial.available() > 0){
     //int input = Serial.read() -'0';
@@ -179,36 +219,61 @@ void loop() {
     input = Serial.readString();
     input.trim(); //remove white space
 
-    //if(input.equals("F") || input.equals("B") || input.equals("L") || input.equals("R") || input.equals("b") ){
-      direction = input.charAt(0);
-    //}
+  
+    direction = input.charAt(0);
+
+
+
+    if(input.equals("Fb")){
+        if(front_distance > 10)
+          Car.Backward(200);
+          direction='b';
+    }
     
+    if(input.equals("Bb")){
+        if(rear_distance > 10)
+          Car.Forward(200);
+          direction='b';
+
+    }
+    
+    if(input.equals("Rb")){
+        if(left_distance > 10)
+           Car.Left(200); 
+          direction='b';
+
+    }
+    
+    if(input.equals("Lb")){
+        if(right_distance > 10)
+          Car.Right(200);
+          direction='b';
+
+    }
     
   }
-   if(left_distance < 30 || right_distance<30 || front_distance<30 || rear_distance<30 ){
-     Car.Brake(); 
-   }
+  
 
     //Serial.println(direction);
     switch(direction){
       case 'F':
-      if(front_distance > 30)
+      if(front_distance > 10)
         Car.Backward();
         break;
       case 'B':
-       if(rear_distance > 30)
+       if(rear_distance > 10)
         Car.Forward();
         break;
       case 'L':
-       if(right_distance > 30)
+       if(right_distance > 10)
           Car.Left();        
         break;
       case 'R':
-       if(left_distance > 30)
+       if(left_distance > 10)
           Car.Right();
         break;
       default:
-             Car.Brake(); 
+          Car.Brake(); 
         break;
     }
   //  direction = 'b';
