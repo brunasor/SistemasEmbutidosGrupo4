@@ -91,7 +91,7 @@ void loop() {
 
  if(DEBUG)
    if(duration==0){
-     Serial.println("Warning: no pulse from sensor REAR");
+    //Serial.println("Warning: no pulse from sensor REAR");
      }else{
        // Serial.println(rear_distance);
     
@@ -113,7 +113,7 @@ void loop() {
    if(duration==0){
      Serial.println("Warning: no pulse from sensor FRONT");
      }else{
-      Serial.println(front_distance);
+    //  Serial.println(front_distance);
 
     }
 
@@ -135,7 +135,7 @@ void loop() {
    if(duration==0){
      Serial.println("Warning: no pulse from sensor RIGHT");
      }else{
-     //   Serial.println(right_distance);
+       //Serial.println(right_distance);
     }
 
 /**-------------------**/
@@ -158,7 +158,7 @@ void loop() {
    if(duration==0){
      Serial.println("Warning: no pulse from sensor LEFT");
      }else{
-       // Serial.println(left_distance);
+        //Serial.println(left_distance);
     }
 
 
@@ -185,33 +185,33 @@ void loop() {
     
     
   }
+   if(left_distance < 30 || right_distance<30 || front_distance<30 || rear_distance<30 ){
+     Car.Brake(); 
+   }
 
-
-    Serial.println(direction);
+    //Serial.println(direction);
     switch(direction){
       case 'F':
-          
       if(front_distance > 30)
-        Car.Backward(150);
+        Car.Backward();
         break;
       case 'B':
        if(rear_distance > 30)
-        Car.Forward(150);
+        Car.Forward();
         break;
       case 'L':
-       if(left_distance > 30)
-          Car.Left(150);        
+       if(right_distance > 30)
+          Car.Left();        
         break;
       case 'R':
-       if(right_distance > 30)
-          Car.Right(150);
+       if(left_distance > 30)
+          Car.Right();
         break;
-       case 'b':
-         Car.Brake(); 
       default:
+             Car.Brake(); 
         break;
     }
-    direction = 'b';
+  //  direction = 'b';
 
 
  
